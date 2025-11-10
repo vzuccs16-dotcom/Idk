@@ -5,29 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>4:44 Clock</title>
 <style>
+    /* Import Larish Neue font */
     @import url('https://fonts.googleapis.com/css2?family=Larish+Neue&display=swap');
 
-    body {
+    html, body {
         margin: 0;
-        height: 100vh;
+        height: 100%;
+        font-family: 'Larish Neue', sans-serif;
         display: flex;
         justify-content: center;
         align-items: center;
-        font-family: 'Larish Neue', sans-serif;
-        font-size: 80px;
         background-color: #ffffff;
         transition: background-color 2s;
+        flex-direction: column;
     }
 
     #clock {
+        font-size: 80px;
         text-align: center;
+        margin-bottom: 20px;
     }
 
     #testBtn {
-        position: absolute;
-        bottom: 20px;
         padding: 10px 20px;
         font-size: 16px;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+        background-color: #ececec;
+        transition: background-color 0.3s;
+    }
+
+    #testBtn:hover {
+        background-color: #ddd;
     }
 </style>
 </head>
@@ -42,7 +52,9 @@ const body = document.body;
 const alarm = document.getElementById('alarm');
 const testBtn = document.getElementById('testBtn');
 
-// Function to format time to HH:MM
+let is444Active = false;
+
+// Format time to HH:MM
 function formatTime(date) {
     let hours = date.getHours();
     let minutes = date.getMinutes();
@@ -77,8 +89,6 @@ function fadeAudio(audio, fadeIn=true, duration=2000) {
     }
 }
 
-let is444Active = false;
-
 function updateClock(trigger=false) {
     const now = new Date();
     const timeString = formatTime(now);
@@ -97,13 +107,14 @@ function updateClock(trigger=false) {
     }
 }
 
-// Update every second
+// Update clock every second
 setInterval(updateClock, 1000);
 
-// Test button
+// Test button triggers 4:44 effect
 testBtn.addEventListener('click', () => {
     updateClock(true);
 });
 </script>
 </body>
 </html>
+
