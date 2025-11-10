@@ -20,12 +20,10 @@
     flex-direction: column;
     transition: background 1.2s ease;
   }
-
   #clock {
     font-size: 120px;
     letter-spacing: 2px;
   }
-
   button {
     margin-top: 20px;
     padding: 10px 18px;
@@ -43,8 +41,8 @@
 <div id="clock">--:--</div>
 <button id="testBtn">Test 4:44 Mode</button>
 
-<!-- Your sound file -->
-<audio id="chime" src="4:44.mp3" preload="auto"></audio>
+<!-- Your audio file -->
+<audio id="chime" src="444.mp3" preload="auto"></audio>
 
 <script>
   let testMode = false;
@@ -52,11 +50,11 @@
 
   function updateClock() {
     const now = new Date();
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
+    let hours = now.getHours();
+    let minutes = now.getMinutes();
 
-    const formatted =
-      String(hours).padStart(2, '0') + ":" +
+    const formatted = 
+      String(hours).padStart(2, '0') + ":" + 
       String(minutes).padStart(2, '0');
 
     document.getElementById("clock").textContent = formatted;
@@ -67,6 +65,7 @@
       if (is444) {
         document.body.style.background = "#ecc09b";
 
+        // Play audio exactly once
         if (!hasPlayedThisMinute) {
           document.getElementById("chime").play().catch(()=>{});
           hasPlayedThisMinute = true;
@@ -80,7 +79,6 @@
 
   document.getElementById("testBtn").addEventListener("click", () => {
     testMode = !testMode;
-
     if (testMode) {
       document.body.style.background = "#ecc09b";
       document.getElementById("chime").play().catch(()=>{});
