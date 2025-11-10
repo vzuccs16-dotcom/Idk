@@ -1,95 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Clock</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clock 4:44 Effect</title>
+  <style>
+    @import url('https://fonts.cdnfonts.com/css/larish-neue');
 
-<!-- Larish Neue -->
-<link href="https://fonts.cdnfonts.com/css/larish-neue" rel="stylesheet">
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Larish Neue', sans-serif;
+      font-size: 6rem;
+      transition: background-color 2s;
+      background-color: #ffffff;
+    }
 
-<style>
-  body {
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: #ffffff;
-    font-family: 'Larish Neue', serif;
-    flex-direction: column;
-    transition: background 1.2s ease;
-  }
-  #clock {
-    font-size: 120px;
-    letter-spacing: 2px;
-  }
-  button {
-    margin-top: 20px;
-    padding: 10px 18px;
-    border: none;
-    background: black;
-    color: white;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 16px;
-  }
-</style>
+    #clock {
+      text-align: center;
+    }
+
+    #testButton {
+      position: absolute;
+      bottom: 20px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
+  <div id="clock">00:00</div>
+  <button id="testButton">Test 4:44</button>
+  <audio id="alarmAudio" src="444.mp3"></audio>
 
-<div id="clock">--:--</div>
-<button id="testBtn">Test 4:44 Mode</button>
+  <script>
+    const clock = document.getElementById('clock');
+    const body = document.body;
+    const audio = document.getElementById('alarmAudio');
+    const testButton = document.getElementById('testButton');
 
-<!-- Your audio file -->
-<audio id="chime" src="444.mp3" preload="auto"></audio>
+    let testMode = false;
 
-<script>
-  let testMode = false;
-  let hasPlayedThisMinute = false;
+    function updateClock() {
+      const now = new Date();
+      let hours = now.getHours();
+      let minutes = now.getMinutes();
 
-  function updateClock() {
-    const now = new Date();
-    let hours = now.getHours();
-    let minutes = now.getMinutes();
+      // Format as HH:MM
+      const hh = String(hours).padStart(2, '0');
+      const mm = String(minutes).padStart(2, '0');
+      clock.textContent = `${hh}:${mm}`;
 
-    const formatted = 
-      String(hours).padStart(2, '0') + ":" + 
-      String(minutes).padStart(2, '0');
-
-    document.getElementById("clock").textContent = formatted;
-
-    const is444 = (formatted === "04:44" || formatted === "16:44");
-
-    if (!testMode) {
-      if (is444) {
-        document.body.style.background = "#ecc09b";
-
-        // Play audio exactly once
-        if (!hasPlayedThisMinute) {
-          document.getElementById("chime").play().catch(()=>{});
-          hasPlayedThisMinute = true;
-        }
+      // Check for 4:44 or test mode
+      if ((hh === '04' && mm === '44') || testMode) {
+        body.style.backgroundColor = '#ecc09b';
+        if (audio.paused) audio.play();
       } else {
-        document.body.style.background = "#ffffff";
-        hasPlayedThisMinute = false;
+        body.style.backgroundColor = '#ffffff';
+        if (!audio.paused) audio.pause();
+        audio.currentTime = 0; // reset audio
+        testMode = false; // auto-reset test mode
       }
     }
-  }
 
-  document.getElementById("testBtn").addEventListener("click", () => {
-    testMode = !testMode;
-    if (testMode) {
-      document.body.style.background = "#ecc09b";
-      document.getElementById("chime").play().catch(()=>{});
-    } else {
+    // Update every second
+    setInterval(updateClock, 1000);
+
+    // Test button
+    testButton.addEventListener('click', () => {
+      testMode = true;
       updateClock();
-    }
-  });
+    });
 
-  updateClock();
-  setInterval(updateClock, 1000);
-</script>
-
+    // Initial update
+    updateClock();
+  </script>
 </body>
 </html>
