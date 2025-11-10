@@ -3,89 +3,93 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>4:44 Clock</title>
+<title>Clock</title>
+
+<!-- Larish Neue -->
+<link href="https://fonts.cdnfonts.com/css/larish-neue" rel="stylesheet">
+
 <style>
-    <link href="https://fonts.cdnfonts.com/css/larish-neue" rel="stylesheet">
-
-
-    body {
-        margin: 0;
-        height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-family: 'Larish Neue', sans-serif;
-        font-size: 5rem;
-        transition: background-color 2s;
-        background-color: #ffffff;
-    }
-
-    #clock {
-        z-index: 1;
-    }
-
-    #testButton {
-        position: absolute;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        padding: 10px 20px;
-        font-size: 1rem;
-        cursor: pointer;
-    }
+  body {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #ffffff;
+    font-family: 'Larish Neue', serif;
+    flex-direction: column;
+    transition: background 1.2s ease;
+  }
+  #clock {
+    font-size: 120px;
+    letter-spacing: 2px;
+  }
+  button {
+    margin-top: 20px;
+    padding: 10px 18px;
+    border: none;
+    background: black;
+    color: white;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 16px;
+  }
 </style>
 </head>
 <body>
 
-<div id="clock">00:00</div>
-<button id="testButton">Toggle Test 4:44</button>
-<audio id="audio" src="444.mp3"></audio>
+<div id="clock">--:--</div>
+<button id="testBtn">Test 4:44 Mode</button>
+
+<!-- Your audio file -->
+<audio id="chime" src="444.mp3" preload="auto"></audio>
 
 <script>
-const clock = document.getElementById('clock');
-const audio = document.getElementById('audio');
-const testButton = document.getElementById('testButton');
+  let testMode = false;
+  let hasPlayedThisMinute = false;
 
-let testMode = false;
-
-function updateClock() {
+  function updateClock() {
     const now = new Date();
     let hours = now.getHours();
     let minutes = now.getMinutes();
-    
-    // Pad single digits
-    hours = hours.toString().padStart(2, '0');
-    minutes = minutes.toString().padStart(2, '0');
-    
-    clock.textContent = `${hours}:${minutes}`;
 
-    const is444 = (hours === '04' && minutes === '44') || (hours === '16' && minutes === '44') || testMode;
+    const formatted = 
+      String(hours).padStart(2, '0') + ":" + 
+      String(minutes).padStart(2, '0');
 
-    if (is444) {
-        document.body.style.backgroundColor = '#ecc09b';
-        if (audio.paused) audio.play();
-    } else {
-        document.body.style.backgroundColor = '#ffffff';
-        if (!audio.paused) audio.pause();
-        audio.currentTime = 0;
+    document.getElementById("clock").textContent = formatted;
+
+    const is444 = (formatted === "04:44" || formatted === "16:44");
+
+    if (!testMode) {
+      if (is444) {
+        document.body.style.background = "#ecc09b";
+
+        // Play audio exactly once
+        if (!hasPlayedThisMinute) {
+          document.getElementById("chime").play().catch(()=>{});
+          hasPlayedThisMinute = true;
+        }
+      } else {
+        document.body.style.background = "#ffffff";
+        hasPlayedThisMinute = false;
+      }
     }
-}
+  }
 
-// Test button toggles test mode
-testButton.addEventListener('click', () => {
+  document.getElementById("testBtn").addEventListener("click", () => {
     testMode = !testMode;
-    updateClock();
-});
+    if (testMode) {
+      document.body.style.background = "#ecc09b";
+      document.getElementById("chime").play().catch(()=>{});
+    } else {
+      updateClock();
+    }
+  });
 
-// Update every second
-setInterval(updateClock, 1000);
-
-// Initialize clock immediately
-updateClock();
+  updateClock();
+  setInterval(updateClock, 1000);
 </script>
 
 </body>
 </html>
-
-
-
