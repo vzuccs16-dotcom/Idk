@@ -5,7 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>4:44 Clock</title>
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Larish+Neue:wght@400&display=swap');
+    @font-face {
+        font-family: 'Larish Neue';
+        src: url('LarishNeue.woff2') format('woff2'),
+             url('LarishNeue.woff') format('woff');
+        font-weight: 400;
+        font-style: normal;
+    }
 
     body {
         margin: 0;
@@ -46,13 +52,33 @@ const audio = document.getElementById('audio');
 const testButton = document.getElementById('testButton');
 
 let testMode = false;
+let fadeInterval = null;
+let targetVolume = 0;
+
+function fadeAudio(toVolume, duration = 2000) {
+    clearInterval(fadeInterval);
+    const stepTime = 50;
+    const steps = duration / stepTime;
+    const volumeStep = (toVolume - audio.volume) / steps;
+    
+    fadeInterval = setInterval(() => {
+        audio.volume += volumeStep;
+        if ((volumeStep > 0 && audio.volume >= toVolume) || (volumeStep < 0 && audio.volume <= toVolume)) {
+            audio.volume = toVolume;
+            clearInterval(fadeInterval);
+            if (toVolume === 0) {
+                audio.pause();
+                audio.currentTime = 0;
+            }
+        }
+    }, stepTime);
+}
 
 function updateClock() {
     const now = new Date();
     let hours = now.getHours();
     let minutes = now.getMinutes();
     
-    // Pad single digits
     hours = hours.toString().padStart(2, '0');
     minutes = minutes.toString().padStart(2, '0');
     
@@ -62,24 +88,22 @@ function updateClock() {
 
     if (is444) {
         document.body.style.backgroundColor = '#ecc09b';
-        if (audio.paused) audio.play();
+        if (audio.paused) {
+            audio.play();
+        }
+        fadeAudio(1); // fade in to full volume
     } else {
         document.body.style.backgroundColor = '#ffffff';
-        if (!audio.paused) audio.pause();
-        audio.currentTime = 0;
+        fadeAudio(0); // fade out
     }
 }
 
-// Test button toggles test mode
 testButton.addEventListener('click', () => {
     testMode = !testMode;
     updateClock();
 });
 
-// Update every second
 setInterval(updateClock, 1000);
-
-// Initialize clock immediately
 updateClock();
 </script>
 
