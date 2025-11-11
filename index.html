@@ -21,6 +21,7 @@
     align-items: center;
     height: 100vh;
     transition: background 0.5s ease;
+    cursor: pointer; /* lets user know they should click once */
   }
 
   #clock {
@@ -41,31 +42,37 @@
   const clock = document.getElementById("clock");
   const audio = document.getElementById("audio444");
 
+  let audioEnabled = false;
+
+  // Unlock audio when user clicks once
+  document.body.addEventListener("click", () => {
+    audioEnabled = true;
+    document.body.style.cursor = "default";
+  }, { once: true });
+
   function updateClock() {
     const now = new Date();
     let hours = now.getHours();
     let minutes = now.getMinutes();
 
-    // Format HH:MM
-    let formatted = 
-      String(hours).padStart(2, '0') + ":" + 
+    let formatted =
+      String(hours).padStart(2, '0') + ":" +
       String(minutes).padStart(2, '0');
 
     clock.textContent = formatted;
 
-    // Check for 4:44 AM or 4:44 PM
-    const is444 = (hours === 4 && minutes === 44) || (hours === 17 && minutes === 46);
+    const is444 = (hours === 4 && minutes === 44) || (hours === 17 && minutes === 48);
 
     if (is444) {
       document.body.style.background = "#ecc09b";
-      
-      if (audio.paused) {
+
+      if (audioEnabled && audio.paused) {
         audio.currentTime = 0;
         audio.play().catch(() => {});
       }
     } else {
       document.body.style.background = "white";
-      
+
       if (!audio.paused) {
         audio.pause();
         audio.currentTime = 0;
