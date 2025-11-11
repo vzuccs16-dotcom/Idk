@@ -2,87 +2,68 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>444 Clock</title>
-
+<title>4:44 Clock</title>
 <style>
   @font-face {
     font-family: "Larish Neue";
-    src: url("LarishNeue-Regular.woff2") format("woff2");
+    src: url("LarishNeue-Regular.woff2") format("woff2"),
+         url("LarishNeue-Regular.ttf") format("truetype");
     font-weight: normal;
     font-style: normal;
   }
 
   body {
     margin: 0;
-    background: white;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    background: white;
     transition: background 0.5s ease;
-    cursor: pointer; /* lets user know they should click once */
+    font-family: "Larish Neue", serif;
   }
 
   #clock {
-    font-family: "Larish Neue", serif;
     font-size: 120px;
-    user-select: none;
+    font-family: "Larish Neue", serif;
+    letter-spacing: 2px;
   }
 </style>
-
 </head>
 <body>
-
 <div id="clock">00:00</div>
-
-<audio id="audio444" src="444.mp3" preload="auto"></audio>
+<audio id="audio" src="444.mp3"></audio>
 
 <script>
   const clock = document.getElementById("clock");
-  const audio = document.getElementById("audio444");
-
-  let audioEnabled = false;
-
-  // Unlock audio when user clicks once
-  document.body.addEventListener("click", () => {
-    audioEnabled = true;
-    document.body.style.cursor = "default";
-  }, { once: true });
+  const audio = document.getElementById("audio");
 
   function updateClock() {
     const now = new Date();
     let hours = now.getHours();
     let minutes = now.getMinutes();
 
-    let formatted =
-      String(hours).padStart(2, '0') + ":" +
-      String(minutes).padStart(2, '0');
-
+    // Format HH:MM
+    const formatted = 
+      String(hours).padStart(2, "0") + ":" + 
+      String(minutes).padStart(2, "0");
     clock.textContent = formatted;
 
-    const is444 = (hours === 4 && minutes === 44) || (hours === 17 && minutes === 48);
+    // Check if time is exactly 4:44 AM or PM
+    const is444 = (hours === 4 || hours === 17) && minutes === 50;
 
     if (is444) {
       document.body.style.background = "#ecc09b";
-
-      if (audioEnabled && audio.paused) {
-        audio.currentTime = 0;
-        audio.play().catch(() => {});
-      }
+      if (audio.paused) audio.play();
     } else {
       document.body.style.background = "white";
-
-      if (!audio.paused) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
+      if (!audio.paused) audio.pause();
+      audio.currentTime = 0;
     }
   }
 
   setInterval(updateClock, 1000);
   updateClock();
 </script>
-
 </body>
 </html>
